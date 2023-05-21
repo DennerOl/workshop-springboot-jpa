@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,7 +45,6 @@ public class UserResource {
 		return ResponseEntity.ok().body(obj);
 	}
 // metodo para inserir um novo usuario no banco de dados	
-	
 	@PostMapping
 	public ResponseEntity<User> insert(@RequestBody User obj){
 		obj = service.insert(obj);
@@ -52,6 +52,12 @@ public class UserResource {
 		.buildAndExpand(obj.getId()).toUri();		
 		return ResponseEntity.created(uri).body(obj);
 	}
-		
+// metodo para deletar um usuario pelo Id
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<Object>delete(@PathVariable Long id) {
+		service.delete(id);
+		return ResponseEntity.noContent().build();
+	}
+	
 }
 
