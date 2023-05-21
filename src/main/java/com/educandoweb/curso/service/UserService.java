@@ -29,5 +29,10 @@ public class UserService {
 	}
 	
 
+// salva no banco de dados um usuario
+	
+	public User insert(User obj) {
+		return repository.save(obj);
+	}
 	
 }
