@@ -13,6 +13,8 @@ import com.educandoweb.curso.repositories.UserRepository;
 import com.educandoweb.curso.resources.exceptions.DataBaseException;
 import com.educandoweb.curso.service.exception.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class UserService {
 
@@ -47,7 +49,7 @@ public class UserService {
  */
 	public void delete(Long id) { 
 		try {
-		repository.deleteById(id);
+			repository.deleteById(id);
 		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException(id);
 		} catch (DataIntegrityViolationException e) {
@@ -55,11 +57,17 @@ public class UserService {
 		}
 	}
 
-// atualizando um usuario
+/* atualizando um usuario
+ * com tratamento de excecao
+ */
 	public User update(Long id, User obj) {
-		User entity = repository.getReferenceById(id);
-		updateData(entity, obj);
-		return repository.save(entity);
+		try {
+			User entity = repository.getReferenceById(id);
+			updateData(entity, obj);
+			return repository.save(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 	}
 
 // metodo auxiliar 
