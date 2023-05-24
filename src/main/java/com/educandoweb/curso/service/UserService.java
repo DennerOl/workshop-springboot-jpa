@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.educandoweb.curso.entities.User;
 import com.educandoweb.curso.repositories.UserRepository;
+import com.educandoweb.curso.resources.exceptions.DataBaseException;
 import com.educandoweb.curso.service.exception.ResourceNotFoundException;
 
 @Service
@@ -37,9 +40,19 @@ public class UserService {
 		return repository.save(obj);
 	}
 	
-// delentando um usuario pelo Id
-	public void delete(Long id) {
+/* delentando um usuario pelo Id
+ * primeira excecao trata de apagar um id que não existe
+ * a segunda trata de apagar um id que existe, mas tem vinculo
+ * com o um pedido (integridade do banco)
+ */
+	public void delete(Long id) { 
+		try {
 		repository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException(id);
+		} catch (DataIntegrityViolationException e) {
+			throw new DataBaseException(e.getMessage());
+		}
 	}
 
 // atualizando um usuario
